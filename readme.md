@@ -21,31 +21,31 @@ git clone https://github.com/ThomasJanssen-tech/Agentic-RAG-with-LangChain.git
 cd Agentic RAG with LangChain
 ```
 
-2. Create a virtual environment
+<h3>2. Create a virtual environment</h3>
 
 ```
 python -m venv venv
 ```
 
-3. Activate the virtual environment
+<h3>3. Activate the virtual environment</h3>
 
 ```
 venv\Scripts\Activate
 (or on Mac): source venv/bin/activate
 ```
 
-4. Install libraries
+<h3>4. Install libraries</h3>
 
 ```
 pip install -r requirements.txt
 ```
 
-5. Create accounts
+<h3>5. Create accounts</h3>
 
 - Create a free account on Supabase: https://supabase.com/
 - Create an API key for OpenAI: https://platform.openai.com/api-keys
 
-6. Execute SQL queries in Supabase
+<h3>6. Execute SQL queries in Supabase</h3>
 
 - Execute the following SQL query in Supabase:
 
@@ -87,12 +87,12 @@ end;
 $$;
 ```
 
-7. Add API keys to .env file
+<h3>7. Add API keys to .env file</h3>
 
 - Rename .env.example to .env
 - Add the API keys for Pinecone and OpenAI to the .env file
 
-<h3>Executing the scripts</h3>
+<h2>Executing the scripts</h2>
 
 1. Open a terminal in VS Code
 
