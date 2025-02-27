@@ -2,12 +2,10 @@
 
 <h2>Watch the full tutorial on my YouTube Channel</h2>
 <div>
-    &nbsp;<br>
+
 <a href="https://www.youtube.com/watch?v=A3WKdt_MNZQ">
     <img src="thumbnail.png" alt="Thomas Janssen Youtube" width="200"/>
 </a>
-    &nbsp;<br>
-     &nbsp;<br>
 </div>
 
 <h2>Prerequisites</h2>
