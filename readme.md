@@ -14,7 +14,7 @@
 </ul>
 
 <h2>Installation</h2>
-1. Clone the repository:
+<h3>1. Clone the repository:</h3>
 
 ```
 git clone https://github.com/ThomasJanssen-tech/Agentic-RAG-with-LangChain.git
