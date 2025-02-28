@@ -109,5 +109,6 @@ streamlit run agentic_rag_streamlit.py
 While making this video, I used the following sources:
 
 <ul>
-<li><a>https://python.langchain.com/docs/integrations/vectorstores/supabase/</a></li>
+<li><a></a></li>
+<li>[Supabase page in LangChain documentation](https://python.langchain.com/docs/integrations/vectorstores/supabase/)</li>
 </ul>
