@@ -28,7 +28,7 @@ loader = PyPDFDirectoryLoader("documents")
 
 # split the documents in multiple chunks
 documents = loader.load()
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
 docs = text_splitter.split_documents(documents)
 
 # store chunks in vector store
@@ -38,5 +38,5 @@ vector_store = SupabaseVectorStore.from_documents(
     client=supabase,
     table_name="documents",
     query_name="match_documents",
-    chunk_size=500,
+    chunk_size=1000,
 )
