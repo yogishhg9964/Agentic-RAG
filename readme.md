@@ -110,5 +110,5 @@ While making this video, I used the following sources:
 
 <ul>
 <li><a></a></li>
-<li>[Supabase page in LangChain documentation](https://python.langchain.com/docs/integrations/vectorstores/supabase/)</li>
+<li>https://python.langchain.com/docs/integrations/vectorstores/supabase/</li>
 </ul>
