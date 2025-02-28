@@ -109,6 +109,7 @@ streamlit run agentic_rag_streamlit.py
 While making this video, I used the following sources:
 
 <ul>
-<li><a></a></li>
 <li>https://python.langchain.com/docs/integrations/vectorstores/supabase/</li>
+<li>https://python.langchain.com/docs/integrations/text_embedding/openai/</li>
+<li>https://platform.openai.com/docs/guides/embeddings</li>
 </ul>
