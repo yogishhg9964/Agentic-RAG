@@ -59,7 +59,7 @@ agent = create_tool_calling_agent(llm, tools, prompt)
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # invoke the agent
-response = agent_executor.invoke({"input": "what is agentic rag?"})
+response = agent_executor.invoke({"input": "why is agentic rag better than naive rag?"})
 
 # put the result on the screen
 print(response["output"])
