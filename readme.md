@@ -112,4 +112,6 @@ While making this video, I used the following sources:
 <li>https://python.langchain.com/docs/integrations/vectorstores/supabase/</li>
 <li>https://python.langchain.com/docs/integrations/text_embedding/openai/</li>
 <li>https://platform.openai.com/docs/guides/embeddings</li>
+<li>https://www.kaggle.com/code/youssef19/documents-splitting-with-langchain</li>
+<li>https://openai.com/index/new-embedding-models-and-api-updates/</li>
 </ul>
