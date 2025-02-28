@@ -114,4 +114,5 @@ While making this video, I used the following sources:
 <li>https://platform.openai.com/docs/guides/embeddings</li>
 <li>https://www.kaggle.com/code/youssef19/documents-splitting-with-langchain</li>
 <li>https://openai.com/index/new-embedding-models-and-api-updates/</li>
+<li>https://zilliz.com/ai-models/text-embedding-3-small</li>
 </ul>
