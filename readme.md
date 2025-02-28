@@ -47,7 +47,7 @@ pip install -r requirements.txt
 
 <h3>6. Execute SQL queries in Supabase</h3>
 
-- Execute the following SQL query in Supabase:
+Execute the following SQL query in Supabase:
 
 ```
 -- Enable the pgvector extension to work with embedding vectors
@@ -90,16 +90,24 @@ $$;
 <h3>7. Add API keys to .env file</h3>
 
 - Rename .env.example to .env
-- Add the API keys for Pinecone and OpenAI to the .env file
+- Add the API keys for Supabase and OpenAI to the .env file
 
 <h2>Executing the scripts</h2>
 
-1. Open a terminal in VS Code
+- Open a terminal in VS Code
 
-2. Execute the following command:
+- Execute the following command:
 
 ```
 python ingest_in_db.py
 python agentic_rag.py
 streamlit run agentic_rag_streamlit.py
 ```
+
+<h2>Sources</h2>
+
+While making this video, I used the following sources:
+
+<ul>
+<li><a>https://python.langchain.com/docs/integrations/vectorstores/supabase/</a></li>
+</ul>
