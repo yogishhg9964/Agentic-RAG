@@ -1,118 +1,65 @@
-<h1>Agentic RAG (Retrieval Augmented Generation) with LangChain and Supabase</h1>
+# Agentic RAG with LangChain
 
-<h2>Watch the full tutorial on my YouTube Channel</h2>
-<div>
+This project implements an agentic Retrieval-Augmented Generation (RAG) system using LangChain. It integrates with Supabase for database and vector storage, and provides various utilities for document ingestion, querying, and voice assistance.
 
-<a href="https://www.youtube.com/watch?v=3ZDeqTIXBPM">
-    <img src="thumbnail.png" alt="Thomas Janssen Youtube" width="200"/>
-</a>
-</div>
+## Project Structure
 
-<h2>Prerequisites</h2>
-<ul>
-  <li>Python 3.11+</li>
-</ul>
+- `agentic_rag.py`: Core agentic RAG implementation.
+- `agentic_rag_streamlit.py`: Streamlit interface for the agentic RAG.
+- `replica/`: Contains a replica of a web app with backend and frontend.
+- `setup_database.py`: Script to setup the database schema and functions.
+- `update_supabase_schema.sql` and `update_supabase_functions.sql`: SQL scripts for Supabase schema and functions.
+- `ingest_in_db.py`: Script to ingest documents into the database.
+- `check_*.py` and `diagnose_*.py`: Various scripts for checking and diagnosing database and documents.
+- `test_*.py`: Test scripts for different components.
 
-<h2>Installation</h2>
-<h3>1. Clone the repository:</h3>
+## Requirements
 
-```
-git clone https://github.com/ThomasJanssen-tech/Agentic-RAG-with-LangChain.git
-cd Agentic RAG with LangChain
-```
+- Python 3.10 or higher
+- Required Python packages listed in `requirements.txt`.
 
-<h3>2. Create a virtual environment</h3>
+## Setup
 
-```
-python -m venv venv
-```
+1. Clone the repository.
+2. Create and activate a Python virtual environment.
+3. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+4. Setup Supabase database:
+   - Run `setup_database.py` to initialize the schema and functions.
+   - Alternatively, apply SQL scripts `update_supabase_schema.sql` and `update_supabase_functions.sql` in your Supabase SQL editor.
+5. Configure environment variables or configuration files as needed for database connection.
 
-<h3>3. Activate the virtual environment</h3>
+## Usage
 
-```
-venv\Scripts\Activate
-(or on Mac): source venv/bin/activate
-```
+- To ingest documents into the database, run:
+  ```
+  python ingest_in_db.py
+  ```
+- To run the agentic RAG system:
+  ```
+  python agentic_rag.py
+  ```
+- To use the Streamlit interface:
+  ```
+  streamlit run agentic_rag_streamlit.py
+  ```
 
-<h3>4. Install libraries</h3>
+## Testing
 
-```
-pip install -r requirements.txt
-```
-
-<h3>5. Create accounts</h3>
-
-- Create a free account on Supabase: https://supabase.com/
-- Create an API key for OpenAI: https://platform.openai.com/api-keys
-
-<h3>6. Execute SQL queries in Supabase</h3>
-
-Execute the following SQL query in Supabase:
-
-```
--- Enable the pgvector extension to work with embedding vectors
-create extension if not exists vector;
-
--- Create a table to store your documents
-create table
-  documents (
-    id uuid primary key,
-    content text, -- corresponds to Document.pageContent
-    metadata jsonb, -- corresponds to Document.metadata
-    embedding vector (1536) -- 1536 works for OpenAI embeddings, change if needed
-  );
-
--- Create a function to search for documents
-create function match_documents (
-  query_embedding vector (1536),
-  filter jsonb default '{}'
-) returns table (
-  id uuid,
-  content text,
-  metadata jsonb,
-  similarity float
-) language plpgsql as $$
-#variable_conflict use_column
-begin
-  return query
-  select
-    id,
-    content,
-    metadata,
-    1 - (documents.embedding <=> query_embedding) as similarity
-  from documents
-  where metadata @> filter
-  order by documents.embedding <=> query_embedding;
-end;
-$$;
+Run test scripts to verify functionality:
+```bash
+python -m unittest test_agent.py
+python -m unittest test_retrieval.py
+# and others
 ```
 
-<h3>7. Add API keys to .env file</h3>
+## Notes
 
-- Rename .env.example to .env
-- Add the API keys for Supabase and OpenAI to the .env file
+- The `replica` folder contains a web app replica with backend and frontend components.
+- Refer to `gemini_setup_instructions.md` for additional setup instructions if applicable.
 
-<h2>Executing the scripts</h2>
+## License
 
-- Open a terminal in VS Code
-
-- Execute the following command:
-
-```
-python ingest_in_db.py
-python agentic_rag.py
-streamlit run agentic_rag_streamlit.py
-```
-
-<h2>Sources</h2>
-
-While making this video, I used the following sources:
-
-<ul>
-<li>https://python.langchain.com/docs/integrations/vectorstores/supabase/</li>
-<li>https://python.langchain.com/docs/integrations/text_embedding/openai/</li>
-<li>https://platform.openai.com/docs/guides/embeddings</li>
-<li>https://www.kaggle.com/code/youssef19/documents-splitting-with-langchain</li>
-<li>https://openai.com/index/new-embedding-models-and-api-updates/</li>
-<li>https://zilliz.com/ai-models/text-embedding-3-small</li>
-</ul>
+This project is licensed under the terms specified in the LICENSE file.

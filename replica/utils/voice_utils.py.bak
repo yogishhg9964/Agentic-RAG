@@ -1,0 +1,134 @@
+import speech_recognition as sr
+import pyttsx3
+import re
+import streamlit as st
+
+def clean_text_for_speech(text):
+    cleaned_text = re.sub(r'[\*\-#\[\]\(\)]', '', text)
+    cleaned_text = ' '.join(cleaned_text.split())
+    return cleaned_text
+
+def process_response_for_speech(text, for_voice_tab=False):
+    segments = []
+    current_pos = 0
+    
+    code_regex = re.compile(r'<CODE>(.*?)</CODE>', re.DOTALL)
+    explanation_regex = re.compile(r'<CODE_EXPLANATION>(.*?)</CODE_EXPLANATION>', re.DOTALL)
+    
+    while current_pos < len(text):
+        code_match = code_regex.search(text, current_pos)
+        exp_match = explanation_regex.search(text, current_pos)
+        
+        next_match = None
+        if code_match and exp_match:
+            next_match = code_match if code_match.start() < exp_match.start() else exp_match
+        elif code_match:
+            next_match = code_match
+        elif exp_match:
+            next_match = exp_match
+        
+        if not next_match:
+            segments.append(('text', text[current_pos:]))
+            break
+        
+        if next_match.start() > current_pos:
+            segments.append(('text', text[current_pos:next_match.start()]))
+        
+        if next_match == code_match:
+            segments.append(('code', next_match.group(1)))
+        else:
+            segments.append(('code_explanation', next_match.group(1)))
+        
+        current_pos = next_match.end()
+    
+    final_segments = []
+    for seg_type, content in segments:
+        if seg_type in ('code', 'code_explanation'):
+            final_segments.append((seg_type, content))
+            continue
+        
+        list_regex = re.compile(r'(\d+\.\s+[^\n]+)')
+        list_matches = list_regex.finditer(content)
+        last_pos = 0
+        
+        for match in list_matches:
+            if match.start() > last_pos:
+                final_segments.append(('text', content[last_pos:match.start()]))
+            num = match.group(1).split('.')[0]
+            item_text = match.group(0)[len(num)+2:].strip()
+            final_segments.append(('list', f"Point {num}, {item_text}"))
+            last_pos = match.end()
+        
+        if last_pos < len(content):
+            remaining = content[last_pos:]
+            sentences = re.split(r'(?<=[.!?])\s+', remaining)
+            for sentence in sentences:
+                if sentence.strip():
+                    seg_type = 'question' if sentence.strip().endswith('?') else 'text'
+                    final_segments.append((seg_type, sentence.strip()))
+    
+    if for_voice_tab:
+        display_segments = [(seg_type, content) for seg_type, content in final_segments if seg_type == 'code']
+        spoken_segments = [(seg_type, clean_text_for_speech(content)) for seg_type, content in final_segments if seg_type in ('text', 'list', 'question', 'code_explanation')]
+        return display_segments, spoken_segments
+    else:
+        spoken_segments = [(seg_type, clean_text_for_speech(content)) for seg_type, content in final_segments]
+        return final_segments, spoken_segments
+
+def recognize_speech():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        st.session_state.debug_info += "Listening for voice input...\n"
+        recognizer.adjust_for_ambient_noise(source, duration=2)
+        recognizer.pause_threshold = 1.5
+        try:
+            audio = recognizer.listen(source, timeout=10, phrase_time_limit=10)
+            st.session_state.debug_info += "Processing audio...\n"
+            text = recognizer.recognize_google(audio)
+            st.session_state.debug_info += f"Recognized: {text}\n"
+            return text
+        except sr.UnknownValueError:
+            st.session_state.debug_info += "Could not understand audio.\n"
+            speak("Sorry, I didn't catch that. Could you please repeat?")
+            return None
+        except sr.RequestError as e:
+            st.session_state.debug_info += f"Speech recognition error: {str(e)}\n"
+            speak("I'm having trouble with speech recognition. Please try again.")
+            return None
+        except sr.WaitTimeoutError:
+            st.session_state.debug_info += "Timed out waiting for speech.\n"
+            return None
+
+def speak(text, is_question=False):
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 150)
+        engine.setProperty('volume', 0.9)
+        if is_question:
+            engine.setProperty('pitch', 1.2)
+        engine.say(text)
+        engine.runAndWait()
+        st.session_state.debug_info += f"Spoke: {text}\n"
+    except Exception as e:
+        st.session_state.debug_info += f"Speech synthesis error: {str(e)}\n"
+
+def is_command(user_input, command_keywords):
+    if user_input is None:
+        return False
+    return any(keyword in user_input.lower() for keyword in command_keywords)
+
+def process_voice_command(user_input):
+    upload_keywords = ["upload", "add document", "process file", "load pdf", "add pdf", "upload document"]
+    clear_keywords = ["clear documents", "reset database", "delete documents"]
+    query_keywords = ["search", "find", "what does", "tell me about", "query", "ask about"]
+    exit_keywords = ["exit", "stop", "quit", "end"]
+    
+    if is_command(user_input, upload_keywords):
+        return "upload"
+    elif is_command(user_input, clear_keywords):
+        return "clear"
+    elif is_command(user_input, exit_keywords):
+        return "exit"
+    elif is_command(user_input, query_keywords) or not is_command(user_input, upload_keywords + clear_keywords + exit_keywords):
+        return "query"
+    return None

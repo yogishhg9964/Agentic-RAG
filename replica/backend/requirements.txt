@@ -1,0 +1,12 @@
+Flask
+python-dotenv
+supabase
+langchain-core
+langchain-google-genai
+langchain-community
+langchain-text-splitters
+PyPDFLoader
+CSVLoader
+TextLoader
+flask-cors # Added flask-cors
+# Add other specific versions if necessary, e.g., Flask==2.0.0
