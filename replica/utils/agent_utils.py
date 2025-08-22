@@ -107,14 +107,31 @@ def initialize_agent_and_qa(supabase_client):
     
     agent_debug_log = []
 
-    @tool(response_format="content_and_artifact")
-    def retrieve_documents(query: str):
+    @tool
+    def retrieve_documents(input: str) -> str:
         """Retrieves relevant document excerpts from the vector store based on the user's query. 
         This tool should be used to gather information from the uploaded documents to answer user questions.
-        The query should be a clear question or topic to search for in the documents.
-        Returns a formatted string of the retrieved document sections and a list of the raw document objects.
+        The input should be a clear question or topic to search for in the documents.
+        Returns a formatted string of the retrieved document sections.
+        
+        Args:
+            input: A clear question or topic to search for in the documents
+            
+        Returns:
+            str: Formatted string of the retrieved document sections
         """
-        log_entry = f"Retrieving documents for query: {query}"
+        log_entry = f"Tool called with input type: {type(input)}, value: {input}"
+        print(log_entry)
+        agent_debug_log.append(log_entry)
+        
+        # Handle both string and dict inputs
+        if isinstance(input, dict):
+            # If it's a dict, look for common parameter names
+            user_query = input.get('query') or input.get('input') or input.get('user_query') or str(input)
+        else:
+            user_query = str(input)
+        
+        log_entry = f"Retrieving documents for query: {user_query}"
         print(log_entry)
         agent_debug_log.append(log_entry)
         try:
@@ -134,14 +151,14 @@ def initialize_agent_and_qa(supabase_client):
                 log_entry = "No documents found in database!"
                 print(log_entry)
                 agent_debug_log.append(log_entry)
-                return "No documents found in the database. Please upload documents first.", []
+                return "No documents found in the database. Please upload documents first."
             
             log_entry = f"Found {len(all_docs)} total documents in database"
             print(log_entry)
             agent_debug_log.append(log_entry)
             
             # Simple keyword matching for now (since vector search is not working)
-            query_words = query.lower().split()
+            query_words = user_query.lower().split()
             scored_docs = []
             
             for doc in all_docs:
@@ -186,17 +203,7 @@ def initialize_agent_and_qa(supabase_client):
             
             serialized = "\n\n".join(formatted_results)
             
-            # Convert to LangChain Document format for compatibility
-            from langchain.schema import Document
-            langchain_docs = []
-            for doc in retrieved_docs:
-                langchain_doc = Document(
-                    page_content=doc["content"],
-                    metadata=doc["metadata"]
-                )
-                langchain_docs.append(langchain_doc)
-            
-            return serialized, langchain_docs
+            return serialized
             
         except Exception as e:
             error_msg = f"Error retrieving documents: {str(e)}"
@@ -204,7 +211,7 @@ def initialize_agent_and_qa(supabase_client):
             agent_debug_log.append(error_msg)
             import traceback
             traceback.print_exc()
-            return error_msg, []
+            return error_msg
     
     tools = [retrieve_documents]
     
