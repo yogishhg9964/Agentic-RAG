@@ -7,6 +7,20 @@ from langchain_core.prompts import PromptTemplate
 from langchain_community.vectorstores import SupabaseVectorStore
 from langchain.chains import RetrievalQA
 import sys
+import streamlit as st
+
+# Function to get environment variable or Streamlit secret
+def get_env_var(key):
+    # First try environment variables
+    value = os.environ.get(key)
+    if value:
+        return value
+    
+    # Then try Streamlit secrets
+    try:
+        return st.secrets[key]
+    except:
+        return None
 
 _agent_executor = None
 _direct_qa = None
@@ -30,14 +44,14 @@ def initialize_agent_and_qa(supabase_client):
 
     llm = ChatGoogleGenerativeAI(
         model="gemini-1.5-flash",
-        google_api_key=os.environ.get("GEMINI_API_KEY"),
+        google_api_key=get_env_var("GEMINI_API_KEY"),
         temperature=0.2,
         max_output_tokens=4096,
         top_p=0.95,
     )
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
-        google_api_key=os.environ.get("GEMINI_API_KEY"),
+        google_api_key=get_env_var("GEMINI_API_KEY"),
     )
 
     vector_store = get_cached_vector_store(supabase_client, embeddings)
@@ -108,8 +122,8 @@ def initialize_agent_and_qa(supabase_client):
             from supabase.client import create_client
             import os
             
-            supabase_url = os.environ.get("SUPABASE_URL")
-            supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
+            supabase_url = get_env_var("SUPABASE_URL")
+            supabase_key = get_env_var("SUPABASE_SERVICE_KEY")
             supabase = create_client(supabase_url, supabase_key)
             
             # Get all documents and filter by content similarity

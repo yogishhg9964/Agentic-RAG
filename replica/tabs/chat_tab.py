@@ -50,6 +50,7 @@ def chat_tab(supabase):
                 st.stop()
         except Exception as e:
             st.session_state.debug_info += f"Error checking count before query: {str(e)}\n"
+            count = 0  # Set default count if error occurs
         
         process_query(user_question, agent_executor, direct_qa, supabase, count)
 

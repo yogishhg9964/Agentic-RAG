@@ -9,6 +9,19 @@ from tabs.debug_info_tab import debug_info_tab
 # Load environment variables
 load_dotenv()
 
+# Function to get environment variable or Streamlit secret
+def get_env_var(key):
+    # First try environment variables
+    value = os.environ.get(key)
+    if value:
+        return value
+    
+    # Then try Streamlit secrets
+    try:
+        return st.secrets[key]
+    except:
+        return None
+
 # Initialize session state
 if "vector_store" not in st.session_state:
     st.session_state.vector_store = None
@@ -21,14 +34,14 @@ if "debug_info" not in st.session_state:
 
 # Check environment variables
 required_env_vars = ["SUPABASE_URL", "SUPABASE_SERVICE_KEY", "GEMINI_API_KEY"]
-missing_vars = [var for var in required_env_vars if not os.environ.get(var)]
+missing_vars = [var for var in required_env_vars if not get_env_var(var)]
 if missing_vars:
     st.error(f"Missing required environment variables: {', '.join(missing_vars)}")
     st.stop()
 
 # Initialize Supabase
-supabase_url = os.environ.get("SUPABASE_URL")
-supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
+supabase_url = get_env_var("SUPABASE_URL")
+supabase_key = get_env_var("SUPABASE_SERVICE_KEY")
 supabase = create_client(supabase_url, supabase_key)
 
 # Set page configuration

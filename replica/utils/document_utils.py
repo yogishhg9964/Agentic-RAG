@@ -8,6 +8,19 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from supabase.client import create_client
 import sys
 
+# Function to get environment variable or Streamlit secret
+def get_env_var(key):
+    # First try environment variables
+    value = os.environ.get(key)
+    if value:
+        return value
+    
+    # Then try Streamlit secrets
+    try:
+        return st.secrets[key]
+    except:
+        return None
+
 def process_uploaded_files(uploaded_files):
     """Process Streamlit uploaded files and convert them to document chunks."""
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -130,13 +143,13 @@ def process_files_from_paths(file_paths):
 
 def store_documents_in_supabase(docs, mode="append"):
     try:
-        supabase_url = os.environ.get("SUPABASE_URL")
-        supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
+        supabase_url = get_env_var("SUPABASE_URL")
+        supabase_key = get_env_var("SUPABASE_SERVICE_KEY")
         supabase = create_client(supabase_url, supabase_key)
         
         embeddings = GoogleGenerativeAIEmbeddings(
             model="models/embedding-001",
-            google_api_key=os.environ.get("GEMINI_API_KEY"),
+            google_api_key=get_env_var("GEMINI_API_KEY"),
         )
         
         if mode == "replace":
@@ -198,13 +211,13 @@ def store_documents_in_supabase(docs, mode="append"):
 
 def get_vector_store():
     try:
-        supabase_url = os.environ.get("SUPABASE_URL")
-        supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
+        supabase_url = get_env_var("SUPABASE_URL")
+        supabase_key = get_env_var("SUPABASE_SERVICE_KEY")
         supabase = create_client(supabase_url, supabase_key)
         
         embeddings = GoogleGenerativeAIEmbeddings(
             model="models/embedding-001",
-            google_api_key=os.environ.get("GEMINI_API_KEY"),
+            google_api_key=get_env_var("GEMINI_API_KEY"),
         )
         
         # Create a simple vector store without the match_documents function
